@@ -1,0 +1,29 @@
+planner:
+  zmp_margin: 0.02  # Safety margin from support polygon edge (meters)
+  max_velocity: 1.0  # Maximum joint velocity (rad/s)
+  max_acceleration: 2.0  # Maximum joint acceleration (rad/s²)
+  planning_time: 5.0  # Maximum planning time (seconds)
+  
+stability:
+  com_height_threshold: 0.05  # Maximum CoM height change (meters)
+  support_polygon_margin: 0.01  # Support polygon safety margin (meters)
+  gravity: 9.81  # Gravitational acceleration (m/s²)
+
+trajectory:
+  num_waypoints: 20  # Number of waypoints in trajectory
+  dt: 0.1  # Time step duration (seconds)
+  weight_smoothness: 1.0  # Weight for smoothness cost
+  weight_time: 0.1  # Weight for trajectory duration
+  weight_energy: 0.01  # Weight for energy consumption
+
+robot:
+  num_joints: 12
+  foot_length: 0.2  # meters
+  foot_width: 0.1  # meters
+  
+  # Joint limits (example for 12-DOF robot)
+  joint_limits:
+    min: [-3.14, -1.57, -2.0, -2.0, -1.57, -2.0, 
+          -3.14, -1.57, -2.0, -2.0, -1.57, -2.0]
+    max: [3.14, 1.57, 0.5, 2.0, 1.57, 2.0,
+          3.14, 1.57, 0.5, 2.0, 1.57, 2.0]
