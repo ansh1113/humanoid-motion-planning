@@ -1,0 +1,145 @@
+# Perception Configuration
+# Parameters for object detection, environment state estimation, and workspace analysis
+
+perception:
+  # Object detection settings
+  object_detection:
+    enabled: true
+    detection_rate: 30  # Hz
+    detection_range: 3.0  # meters
+    confidence_threshold: 0.6
+    
+    # Camera configuration
+    camera:
+      rgb_topic: "/camera/color/image_raw"
+      depth_topic: "/camera/depth/image_raw"
+      camera_info_topic: "/camera/color/camera_info"
+      frame_id: "camera_link"
+      
+      # Intrinsics (example values)
+      fx: 525.0
+      fy: 525.0
+      cx: 319.5
+      cy: 239.5
+      width: 640
+      height: 480
+    
+    # Detection classes
+    object_classes:
+      - "target"
+      - "obstacle"
+      - "surface"
+      - "container"
+      - "tool"
+    
+    # Model settings
+    model:
+      type: "yolo"  # or "mask_rcnn", "detectron2"
+      weights_path: "models/yolo_weights.pt"
+      device: "cuda"  # or "cpu"
+      batch_size: 1
+  
+  # Point cloud processing
+  point_cloud:
+    enabled: true
+    topic: "/camera/depth/points"
+    frame_id: "camera_link"
+    downsample_voxel_size: 0.01  # meters
+    
+    # Segmentation
+    segmentation:
+      method: "euclidean_clustering"
+      cluster_tolerance: 0.02
+      min_cluster_size: 100
+      max_cluster_size: 25000
+    
+    # Plane detection (for surfaces)
+    plane_detection:
+      enabled: true
+      distance_threshold: 0.01
+      max_iterations: 1000
+  
+  # Environment state estimation
+  environment:
+    update_rate: 10  # Hz
+    
+    # Workspace bounds
+    workspace:
+      min_bounds: [-1.5, -1.5, 0.0]
+      max_bounds: [1.5, 1.5, 2.5]
+    
+    # Object tracking
+    tracking:
+      enabled: true
+      max_tracking_distance: 0.3  # meters
+      tracking_history: 30  # frames
+    
+    # Obstacle expansion (for safety)
+    obstacle_padding: 0.05  # meters
+    
+  # Workspace analysis
+  workspace_analysis:
+    enabled: true
+    
+    # Reachability map
+    reachability:
+      resolution: 0.05  # meters
+      num_samples: 5000
+      cache_results: true
+      cache_path: "cache/reachability_map.npy"
+    
+    # Collision checking
+    collision:
+      enabled: true
+      check_rate: 100  # Hz
+      min_clearance: 0.05  # meters
+  
+  # Goal prediction
+  goal_prediction:
+    enabled: true
+    
+    # Grasp planning
+    grasp:
+      approach_distance: 0.15  # meters
+      retreat_distance: 0.2  # meters
+      grasp_offset: 0.05  # meters into object
+      
+      # Approach directions (preferences)
+      preferred_approaches:
+        - [0, 0, -1]  # From above
+        - [0, -1, 0]  # From front
+        - [1, 0, 0]   # From side
+    
+    # Via point generation
+    via_points:
+      enabled: true
+      num_via_points: 3
+      obstacle_clearance: 0.2  # meters
+    
+    # Goal quality evaluation
+    quality:
+      distance_weight: 0.3
+      reachability_weight: 0.4
+      clearance_weight: 0.3
+
+# Visualization settings
+visualization:
+  enabled: true
+  
+  # Markers
+  markers:
+    detected_objects: true
+    support_polygon: true
+    zmp: true
+    com: true
+    trajectory: true
+    reachability_map: false
+  
+  # Colors (RGBA)
+  colors:
+    target: [0.0, 1.0, 0.0, 0.8]
+    obstacle: [1.0, 0.0, 0.0, 0.6]
+    support_polygon: [0.0, 0.0, 1.0, 0.5]
+    zmp: [1.0, 0.0, 0.0, 1.0]
+    com: [0.0, 1.0, 1.0, 1.0]
+    trajectory: [1.0, 1.0, 0.0, 0.8]
