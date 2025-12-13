@@ -9,9 +9,11 @@ with open(this_directory / 'README.md', encoding='utf-8') as f:
 # Read requirements
 with open(this_directory / 'requirements.txt', encoding='utf-8') as f:
     requirements = [
-        line.strip() for line in f 
-        if line.strip() and not line.startswith('#') and ';' not in line
+        line.split(';')[0].strip() for line in f 
+        if line.strip() and not line.startswith('#')
     ]
+    # Remove empty strings from splitting
+    requirements = [req for req in requirements if req]
 
 setup(
     name="humanoid-motion-planning",
