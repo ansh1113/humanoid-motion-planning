@@ -54,9 +54,6 @@ Documentation = "https://github.com/ansh1113/humanoid-motion-planning/blob/main/
 Repository = "https://github.com/ansh1113/humanoid-motion-planning"
 Issues = "https://github.com/ansh1113/humanoid-motion-planning/issues"
 
-[project.scripts]
-humanoid-planner = "humanoid_planner.cli:main"
-
 [tool.setuptools]
 package-dir = {"" = "src"}
 

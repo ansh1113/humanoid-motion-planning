@@ -237,7 +237,8 @@ def validate_urdf(urdf_path):
     try:
         tree = ET.parse(urdf_path)
         root = tree.getroot()
-        assert root.tag == 'robot', "Root element must be 'robot'"
+        if root.tag != 'robot':
+            raise ValueError("Root element must be 'robot'")
         print("✓ URDF is valid XML")
         return True
     except Exception as e:
