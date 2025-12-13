@@ -1,14 +1,17 @@
 from setuptools import setup, find_packages
-import os
+from pathlib import Path
 
 # Read the contents of README file
-this_directory = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+this_directory = Path(__file__).parent.resolve()
+with open(this_directory / 'README.md', encoding='utf-8') as f:
     long_description = f.read()
 
 # Read requirements
-with open(os.path.join(this_directory, 'requirements.txt'), encoding='utf-8') as f:
-    requirements = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+with open(this_directory / 'requirements.txt', encoding='utf-8') as f:
+    requirements = [
+        line.strip() for line in f 
+        if line.strip() and not line.startswith('#') and ';' not in line
+    ]
 
 setup(
     name="humanoid-motion-planning",

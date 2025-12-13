@@ -47,9 +47,6 @@ viz = [
     "pyqt5",
     "pyqtgraph",
 ]
-all = [
-    "humanoid-motion-planning[drake,dev,viz]"
-]
 
 [project.urls]
 Homepage = "https://github.com/ansh1113/humanoid-motion-planning"

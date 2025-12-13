@@ -41,14 +41,12 @@ def parse_args():
     parser.add_argument(
         '--show-zmp',
         action='store_true',
-        default=True,
         help='Show ZMP trajectory plot'
     )
     
     parser.add_argument(
         '--show-joints',
         action='store_true',
-        default=True,
         help='Show joint angle profiles'
     )
     
@@ -270,14 +268,13 @@ def visualize_trajectory(trajectory: Dict, args):
         trajectory: Trajectory dictionary
         args: Command line arguments
     """
-    # Determine number of subplots
-    n_plots = sum([args.show_zmp, args.show_joints, args.show_velocity])
-    
-    if n_plots == 0:
-        print("Warning: No plots selected. Showing ZMP and joints by default.")
+    # Determine number of subplots - default to showing ZMP and joints if none specified
+    if not args.show_zmp and not args.show_joints and not args.show_velocity:
+        print("Note: No plots explicitly selected. Showing ZMP and joints by default.")
         args.show_zmp = True
         args.show_joints = True
-        n_plots = 2
+    
+    n_plots = sum([args.show_zmp, args.show_joints, args.show_velocity])
     
     # Create figure with GridSpec for flexible layout
     fig = plt.figure(figsize=(15, 5 * ((n_plots + 1) // 2)))
