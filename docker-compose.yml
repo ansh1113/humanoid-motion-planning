@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  humanoid-planner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: humanoid-motion-planning:latest
+    container_name: humanoid-planner
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./results:/app/results
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DISPLAY=${DISPLAY}
+    ports:
+      - "8888:8888"  # Jupyter
+    stdin_open: true
+    tty: true
+    command: bash
+
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: humanoid-motion-planning:latest
+    container_name: humanoid-jupyter
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./results:/app/results
+    ports:
+      - "8888:8888"
+    command: jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+
+  # Development environment with hot-reload
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: humanoid-motion-planning:latest
+    container_name: humanoid-dev
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    stdin_open: true
+    tty: true
+    command: bash
