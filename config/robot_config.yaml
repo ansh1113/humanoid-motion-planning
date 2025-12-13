@@ -1,0 +1,123 @@
+# Robot Configuration
+# Defines robot-specific parameters for humanoid motion planning
+
+robot:
+  name: "humanoid_robot"
+  num_joints: 32  # Total DOF
+  
+  # Joint limits (radians)
+  joint_limits:
+    # Left arm (7 DOF)
+    left_arm:
+      shoulder_pitch: [-1.57, 1.57]
+      shoulder_roll: [-1.57, 1.57]
+      shoulder_yaw: [-1.57, 1.57]
+      elbow: [0.0, 2.62]
+      wrist_pitch: [-1.57, 1.57]
+      wrist_roll: [-1.57, 1.57]
+      wrist_yaw: [-1.57, 1.57]
+    
+    # Right arm (7 DOF)
+    right_arm:
+      shoulder_pitch: [-1.57, 1.57]
+      shoulder_roll: [-1.57, 1.57]
+      shoulder_yaw: [-1.57, 1.57]
+      elbow: [0.0, 2.62]
+      wrist_pitch: [-1.57, 1.57]
+      wrist_roll: [-1.57, 1.57]
+      wrist_yaw: [-1.57, 1.57]
+    
+    # Torso (3 DOF)
+    torso:
+      pitch: [-0.5, 0.5]
+      roll: [-0.3, 0.3]
+      yaw: [-0.785, 0.785]
+    
+    # Left leg (6 DOF)
+    left_leg:
+      hip_pitch: [-1.57, 1.57]
+      hip_roll: [-0.5, 0.5]
+      hip_yaw: [-0.785, 0.785]
+      knee: [0.0, 2.35]
+      ankle_pitch: [-0.785, 0.785]
+      ankle_roll: [-0.5, 0.5]
+    
+    # Right leg (6 DOF)
+    right_leg:
+      hip_pitch: [-1.57, 1.57]
+      hip_roll: [-0.5, 0.5]
+      hip_yaw: [-0.785, 0.785]
+      knee: [0.0, 2.35]
+      ankle_pitch: [-0.785, 0.785]
+      ankle_roll: [-0.5, 0.5]
+  
+  # Velocity limits (rad/s)
+  velocity_limits:
+    arm_joints: 2.0
+    torso_joints: 1.0
+    leg_joints: 1.5
+  
+  # Acceleration limits (rad/s²)
+  acceleration_limits:
+    arm_joints: 5.0
+    torso_joints: 3.0
+    leg_joints: 4.0
+  
+  # Mass properties
+  mass:
+    total: 60.0  # kg
+    torso: 25.0
+    head: 5.0
+    left_arm: 4.0
+    right_arm: 4.0
+    left_leg: 11.0
+    right_leg: 11.0
+  
+  # Link dimensions (meters)
+  dimensions:
+    torso:
+      height: 0.6
+      width: 0.4
+      depth: 0.3
+    
+    upper_arm: 0.28
+    forearm: 0.26
+    hand:
+      length: 0.15
+      width: 0.08
+    
+    thigh: 0.4
+    shin: 0.42
+    foot:
+      length: 0.26
+      width: 0.12
+      height: 0.08
+  
+  # End-effector properties
+  end_effectors:
+    left_hand:
+      max_reach: 0.8  # meters from shoulder
+      gripper_length: 0.15
+      grasp_force: 50.0  # Newtons
+    
+    right_hand:
+      max_reach: 0.8
+      gripper_length: 0.15
+      grasp_force: 50.0
+  
+  # Center of Mass (default standing pose)
+  default_com:
+    height: 0.95  # meters above ground
+    position: [0.0, 0.0, 0.95]
+
+# Base configuration
+base:
+  height: 1.0  # Standing height (meters)
+  foot_separation: 0.2  # Lateral distance between feet (meters)
+  
+# URDF/Model paths
+model:
+  urdf_path: "robots/humanoid.urdf"
+  mesh_directory: "robots/meshes/"
+  use_collision_geometry: true
+  use_visual_geometry: true
