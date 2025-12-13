@@ -3,6 +3,7 @@
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Drake](https://img.shields.io/badge/Drake-Optional-orange.svg)](https://drake.mit.edu/)
+[![CI](https://github.com/ansh1113/humanoid-motion-planning/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/ansh1113/humanoid-motion-planning/actions)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/ansh1113/humanoid-motion-planning/graphs/commit-activity)
 
 **Humanoid whole-body motion planning with Zero Moment Point (ZMP) constraints for safe reaching tasks while maintaining balance.**
@@ -18,11 +19,14 @@
 
 - [Overview](#overview)
 - [Key Features](#key-features)
-- [Technical Architecture](#technical-architecture)
+- [Quick Start](#-quick-start)
 - [Installation](#installation)
+- [Docker Usage](#-docker-usage)
 - [Usage](#usage)
+- [Technical Architecture](#technical-architecture)
 - [Algorithm Details](#algorithm-details)
 - [Performance Metrics](#performance-metrics)
+- [Documentation](#-documentation)
 - [Citation](#citation)
 
 ---
@@ -42,94 +46,143 @@ This project implements an advanced motion planner for humanoid robots using Dra
 - **40% Improvement**: Increased successful manipulation task completions through robust constraint handling
 - **Whole-Body Coordination**: Simultaneous planning for arms, torso, and legs to maintain stability
 
+## 🚀 Quick Start
+
+Get up and running in under 5 minutes:
+
+```bash
+# Clone the repository
+git clone https://github.com/ansh1113/humanoid-motion-planning.git
+cd humanoid-motion-planning
+
+# Install dependencies
+pip install -r requirements.txt
+pip install -e .
+
+# Run a basic reaching task
+python scripts/run_reaching_task.py --target 0.5 0.3 1.2 --visualize
+```
+
+For detailed instructions, see the [Quick Start Guide](docs/quickstart.md).
+
 ## Technical Architecture
 
 ### Core Components
 
-1. **Motion Planner Module** (`src/motion_planner/`)
-   - Trajectory generation using Drake's optimization framework
+1. **Motion Planner Module** (`src/humanoid_planner/`)
+   - Trajectory generation and optimization
    - ZMP constraint formulation and enforcement
    - Support polygon computation
 
-2. **Kinematics Engine** (`src/kinematics/`)
+2. **Kinematics Engine** (`src/humanoid_planner/kinematics.py`)
    - Forward and inverse kinematics solvers
    - Jacobian computation for velocity control
    - Center of Mass (CoM) tracking
 
-3. **Stability Analysis** (`src/stability/`)
+3. **Stability Analysis** (`src/humanoid_planner/stability_analysis.py`)
    - ZMP calculation from ground reaction forces
    - Support polygon generation from foot contacts
    - Static stability verification
 
-4. **MoveIt Integration** (`src/moveit_interface/`)
+4. **Perception Module** (`src/humanoid_planner/perception.py`)
    - Robot state management
-   - Collision detection
-   - Path planning interface
+   - Sensor data processing
+   - Environment perception
 
 ## Installation
 
 ### Prerequisites
 
-```bash
-# ROS2 Humble
-sudo apt install ros-humble-desktop
+- Python 3.8 or higher
+- pip package manager
+- (Optional) Drake for advanced simulation features
 
-# Drake
-pip3 install drake
-
-# MoveIt2
-sudo apt install ros-humble-moveit
-
-# Additional dependencies
-pip3 install numpy scipy matplotlib
-```
-
-### Build Instructions
+### Quick Install
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/humanoid-motion-planning.git
+git clone https://github.com/ansh1113/humanoid-motion-planning.git
 cd humanoid-motion-planning
 
-# Build with colcon
-colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+# Install dependencies
+pip install -r requirements.txt
 
-# Source the workspace
-source install/setup.bash
+# Install the package in development mode
+pip install -e .
+
+# Optional: Install development dependencies
+pip install -r requirements-dev.txt
+```
+
+### Optional: Install Drake
+
+For full simulation capabilities with Drake:
+
+```bash
+pip install drake
+```
+
+For detailed installation instructions, see [docs/installation.md](docs/installation.md).
+
+## 🐳 Docker Usage
+
+You can run the project in Docker for a consistent environment:
+
+```bash
+# Build the Docker image
+docker-compose build
+
+# Run a reaching task in Docker
+docker-compose run humanoid-planner python scripts/run_reaching_task.py --target 0.5 0.3 1.2
+
+# Run with visualization (requires X11 forwarding)
+xhost +local:docker
+docker-compose run humanoid-planner python scripts/run_reaching_task.py --visualize
 ```
 
 ## Usage
 
-### Basic Motion Planning
+### Command Line Interface
 
 ```bash
-# Launch the motion planner with visualization
-ros2 launch humanoid_planner motion_planning.launch.py
+# Run a basic reaching task
+python scripts/run_reaching_task.py --target 0.5 0.3 1.2
 
-# Run a reaching task
-ros2 run humanoid_planner reach_task --target "0.5 0.3 1.2"
+# Run with visualization
+python scripts/run_reaching_task.py --target 0.5 0.3 1.2 --visualize
+
+# Use custom configuration
+python scripts/run_reaching_task.py --config config/planner_params.yaml --target 0.5 0.3 1.2
+
+# Visualize a trajectory
+python scripts/visualize_trajectory.py --trajectory output/trajectory.pkl
 ```
 
 ### Python API
 
 ```python
-from humanoid_planner import MotionPlanner, ZMPConstraint
+from humanoid_planner import MotionPlanner, ZMPConstraint, SupportPolygonCalculator
+import numpy as np
 
-# Initialize planner
-planner = MotionPlanner(urdf_path="robots/humanoid.urdf")
+# Initialize planner with configuration
+planner = MotionPlanner(config_path="config/planner_params.yaml")
 
-# Set target pose
-target_pose = [0.5, 0.3, 1.2, 0, 0, 0, 1]  # x, y, z, qx, qy, qz, qw
+# Set target position (x, y, z)
+target_position = np.array([0.5, 0.3, 1.2])
 
 # Plan with ZMP constraints
 trajectory = planner.plan_reaching_task(
-    target_pose=target_pose,
-    zmp_constraint=ZMPConstraint(margin=0.02),
+    target_position=target_position,
+    zmp_margin=0.02,  # Safety margin from support polygon edge
     max_planning_time=5.0
 )
 
-# Execute trajectory
-planner.execute_trajectory(trajectory)
+# Visualize the planned trajectory
+if trajectory is not None:
+    planner.visualize_trajectory(trajectory)
+    print(f"Planning successful! Trajectory has {len(trajectory)} waypoints")
+else:
+    print("Planning failed - no valid trajectory found")
 ```
 
 ### Configuration
@@ -224,52 +277,52 @@ def compute_support_polygon(foot_contacts):
 ```
 humanoid-motion-planning/
 ├── config/
-│   ├── planner_params.yaml
-│   └── robot_config.yaml
-├── launch/
-│   ├── motion_planning.launch.py
-│   └── simulation.launch.py
-├── robots/
-│   ├── humanoid.urdf
-│   └── meshes/
-├── src/
-│   ├── humanoid_planner/
-│   │   ├── motion_planner.py
-│   │   ├── zmp_constraint.py
-│   │   ├── support_polygon.py
-│   │   └── trajectory_optimizer.py
-│   ├── kinematics/
-│   │   ├── forward_kinematics.py
-│   │   └── inverse_kinematics.py
-│   └── stability/
-│       ├── zmp_calculator.py
-│       └── stability_verifier.py
+│   ├── planner_params.yaml      # Motion planner parameters
+│   ├── robot_config.yaml        # Robot configuration
+│   └── perception_config.yaml   # Perception settings
+├── src/humanoid_planner/
+│   ├── __init__.py
+│   ├── motion_planner.py        # Main motion planning logic
+│   ├── zmp_constraint.py        # ZMP constraint implementation
+│   ├── support_polygon.py       # Support polygon calculations
+│   ├── trajectory_optimizer.py  # Trajectory optimization
+│   ├── kinematics.py            # Forward/inverse kinematics
+│   ├── stability_analysis.py    # Stability verification
+│   └── perception.py            # Sensor processing
 ├── scripts/
-│   ├── run_reaching_task.py
-│   └── visualize_trajectory.py
+│   ├── run_reaching_task.py     # Example reaching task
+│   └── visualize_trajectory.py  # Trajectory visualization
 ├── tests/
 │   ├── test_motion_planner.py
-│   ├── test_zmp_constraint.py
-│   └── test_kinematics.py
-└── docs/
-    ├── algorithm.md
-    ├── api_reference.md
-    └── examples.md
+│   ├── test_stability_analysis.py
+│   ├── test_perception.py
+│   └── test_integration.py
+├── docs/
+│   ├── installation.md          # Detailed installation guide
+│   ├── quickstart.md            # Getting started tutorial
+│   ├── api_reference.md         # API documentation
+│   └── architecture.md          # System architecture
+├── robots/
+│   └── README.md                # URDF and robot model info
+├── examples/
+│   └── complete_demo.py         # Complete usage example
+├── requirements.txt             # Production dependencies
+├── requirements-dev.txt         # Development dependencies
+├── setup.py                     # Package setup
+├── pyproject.toml              # Modern Python config
+├── CHANGELOG.md                # Version history
+└── README.md                   # This file
 ```
 
-## Example Results
+## 📚 Documentation
 
-### Reaching Task Visualization
+Comprehensive documentation is available:
 
-![Reaching Task](docs/images/reaching_task.gif)
-
-*Humanoid robot performing a reaching task while maintaining balance*
-
-### ZMP Trajectory
-
-![ZMP Trajectory](docs/images/zmp_trajectory.png)
-
-*ZMP trajectory (blue) remains within support polygon (red) throughout motion*
+- **[Installation Guide](docs/installation.md)** - Detailed setup instructions
+- **[Quick Start Tutorial](docs/quickstart.md)** - Get started in minutes
+- **[API Reference](docs/api_reference.md)** - Complete API documentation
+- **[Architecture Guide](docs/architecture.md)** - System design and architecture
+- **[Robot Models](robots/README.md)** - URDF and robot configuration info
 
 ## Technical Details
 
@@ -289,13 +342,15 @@ The system uses a 32-DOF humanoid model:
 
 ## Dependencies
 
+### Required
 - Python 3.8+
-- ROS2 Humble
-- Drake 1.x
-- MoveIt2
 - NumPy 1.21+
 - SciPy 1.7+
 - Matplotlib 3.4+
+- PyYAML 5.4+
+
+### Optional
+- Drake (pydrake) - For advanced simulation and optimization features
 
 ## Troubleshooting
 
@@ -343,7 +398,7 @@ If you use this work in your research, please cite:
   author = {Bhansali, Ansh},
   title = {Humanoid Whole-Body Motion Planning with ZMP Constraints},
   year = {2025},
-  url = {https://github.com/yourusername/humanoid-motion-planning}
+  url = {https://github.com/ansh1113/humanoid-motion-planning}
 }
 ```
 
@@ -351,4 +406,4 @@ If you use this work in your research, please cite:
 
 Ansh Bhansali - anshbhansali5@gmail.com
 
-Project Link: [https://github.com/yourusername/humanoid-motion-planning](https://github.com/yourusername/humanoid-motion-planning)
+Project Link: [https://github.com/ansh1113/humanoid-motion-planning](https://github.com/ansh1113/humanoid-motion-planning)
