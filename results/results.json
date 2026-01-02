@@ -1,0 +1,18 @@
+{
+  "walking": {
+    "distance": 3.01,
+    "time": 7.2,
+    "speed": 0.42
+  },
+  "manipulation": {
+    "success": 5,
+    "total": 6,
+    "rate": 83
+  },
+  "stability": {
+    "normal_survived": 33,
+    "zmp_survived": 39,
+    "improvement": 6,
+    "improvement_pct": 18
+  }
+}
