@@ -24,6 +24,13 @@
 ## Demo Results
 
 ```
+<p align="center">
+  <img src="results/locomotion.gif" width="45%"/>
+  <img src="results/phase2-4.gif" width="45%"/>
+</p>
+
+*Left: RL Locomotion (2.01m walk) | Right: Manipulation, Push Recovery, Wave*
+
 ╔══════════════════════════════════════════════════════════╗
 ║              HUMANOID SHOWCASE DEMO                      ║
 ║        Walk → Reach → Push Recovery → Wave              ║
